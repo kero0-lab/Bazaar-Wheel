@@ -22,12 +22,25 @@ align-items: center;
 overflow-x: hidden;
 }
 
+/* ❄️ التلج */
+.snowflake {
+position: fixed;
+top: -10px;
+color: #fff;
+animation: fall linear infinite;
+z-index: 1;
+pointer-events: none;
+}
+
+@keyframes fall {
+to { transform: translateY(110vh); }
+}
+
 .container {
 position: relative;
 z-index: 10;
 text-align: center;
 padding: 10px;
-width: 100%;
 max-width: 500px;
 }
 
@@ -35,15 +48,12 @@ h1 {
 font-family: 'Mountains of Christmas', cursive;
 color: #FFD700;
 font-size: 2.8rem;
-margin: 10px 0;
 text-shadow: 2px 2px 0 #000;
 }
 
 .wheel-wrapper {
 position: relative;
-display: inline-block;
-margin: 10px 0;
-min-height: 400px;
+margin: 20px 0;
 }
 
 .pointer {
@@ -54,48 +64,40 @@ transform: translateX(-50%);
 width: 45px;
 height: 45px;
 background: url('https://img.icons8.com/emoji/48/star-emoji.png') no-repeat center/contain;
-z-index: 20;
-filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+z-index: 10;
 }
 
 .form-box {
-background: rgba(255, 255, 255, 0.95);
+background: rgba(255,255,255,0.95);
 padding: 20px;
 border-radius: 15px;
-width: 90%;
-max-width: 400px;
-margin: 0 auto;
-box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+color: #000;
 }
 
-input[type="email"] {
+input {
 width: 80%;
-padding: 12px;
-margin-bottom: 10px;
-border: 2px solid #146B3A;
+padding: 10px;
 border-radius: 8px;
+border: 2px solid #146B3A;
 text-align: center;
 font-size: 16px;
-outline: none;
-font-family: 'Cairo', sans-serif;
 }
 
-button#spinBtn {
-background: #146B3A;
-color: white;
+button {
+margin-top: 10px;
 width: 90%;
 padding: 12px;
 font-size: 18px;
-border: none;
 border-radius: 8px;
+border: none;
+background: #146B3A;
+color: #fff;
 cursor: pointer;
 font-weight: bold;
-transition: 0.2s;
-font-family: 'Cairo', sans-serif;
 }
 
-button#spinBtn:disabled {
-background: #888;
+button:disabled {
+background: #999;
 cursor: not-allowed;
 }
 
@@ -107,18 +109,36 @@ left: 50%;
 transform: translate(-50%, -50%);
 background: #FFD700;
 color: #8B0000;
-font-size: 35px;
-font-weight: bold;
-padding: 40px 30px;
+padding: 30px;
 border-radius: 20px;
-text-align: center;
 z-index: 1000;
-box-shadow: 0 0 20px rgba(0,0,0,0.5);
+text-align: center;
+}
+
+#prizeText {
+font-size: 28px;
+font-weight: bold;
+}
+
+#retryBtn {
+margin-top: 20px;
+padding: 10px 20px;
+font-size: 18px;
+border: none;
+border-radius: 10px;
+background: #8B0000;
+color: #FFD700;
+cursor: pointer;
+font-family: 'Cairo', sans-serif;
+font-weight: bold;
 }
 </style>
 </head>
 
 <body>
+
+<!-- ❄️ حاوية التلج -->
+<div id="snow-container"></div>
 
 <div class="container">
 <h1>Christmas Spin 🎄</h1>
@@ -129,25 +149,28 @@ box-shadow: 0 0 20px rgba(0,0,0,0.5);
 </div>
 
 <div class="form-box">
-<h3 style="color:#146B3A;">سجل إيميلك وجرب حظك!</h3>
+<h3>سجل إيميلك وجرب حظك!</h3>
 <input type="email" id="email" placeholder="اكتب ايميلك هنا...">
 <br>
 <button id="spinBtn" onclick="calculatePrize()">لف العجلة 🎅</button>
-<p id="statusMsg" style="color:#d32f2f;font-size:13px;font-weight:bold;"></p>
+<p id="statusMsg" style="color:red;font-size:13px;font-weight:bold;"></p>
 </div>
 </div>
 
-<div id="prizePopup"></div>
+<div id="prizePopup">
+  <div id="prizeText"></div>
+  <button id="retryBtn" onclick="retrySpin()">🔄 إعادة المحاولة</button>
+</div>
 
 <script>
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5eDQF4yhGhU-7iw-kdP5hCAjltudwP9FNt0v0VAcUuTFxbeeUk0wBfzpjpvdBfXgE7A/exec";
 let theWheel;
 
+/* 🎡 تحميل العجلة */
 window.onload = function() {
 fetch(APP_SCRIPT_URL)
 .then(res => res.json())
 .then(segments => {
-
 theWheel = new Winwheel({
 numSegments: segments.length,
 outerRadius: 200,
@@ -163,8 +186,10 @@ callbackFinished: alertPrize
 }
 });
 });
+createSnow();
 };
 
+/* 🎯 لف العجلة */
 function calculatePrize() {
 let email = document.getElementById('email').value.trim();
 let btn = document.getElementById('spinBtn');
@@ -189,7 +214,7 @@ if(data.result === "success"){
 let prizeIndex = data.prizeIndex;
 let stopAt = theWheel.getRandomForSegment(prizeIndex + 1);
 
-theWheel.userData = "🎉 مبروك! كسبت الجائزة 🎁";
+theWheel.userData = theWheel.segments[prizeIndex].text;
 theWheel.animation.stopAngle = stopAt;
 theWheel.startAnimation();
 } else {
@@ -200,19 +225,34 @@ btn.innerText = "لف العجلة 🎅";
 });
 }
 
+/* 🎁 عرض الجائزة */
 function alertPrize(){
-const popup = document.getElementById('prizePopup');
-popup.innerText = theWheel.userData;
-popup.style.display = 'block';
+document.getElementById('prizeText').innerText =
+"🎉 ربحت: " + theWheel.userData;
+document.getElementById('prizePopup').style.display = 'block';
+}
 
-setTimeout(()=>{
-popup.style.display = 'none';
-
+/* 🔄 إعادة المحاولة */
+function retrySpin(){
+document.getElementById('prizePopup').style.display = 'none';
 let btn = document.getElementById('spinBtn');
 btn.disabled = false;
-btn.innerText = "لف تاني 🎅";
+btn.innerText = "لف العجلة 🎅";
+}
 
-}, 3000);
+/* ❄️ إنشاء التلج */
+function createSnow() {
+const container = document.getElementById('snow-container');
+for(let i=0;i<40;i++){
+let flake = document.createElement('div');
+flake.className='snowflake';
+flake.innerText=['❄','❅','❆','•'][Math.floor(Math.random()*4)];
+flake.style.left=Math.random()*100+'vw';
+flake.style.animationDuration=(Math.random()*3+2)+'s';
+flake.style.opacity=Math.random();
+flake.style.fontSize=(Math.random()*20+10)+'px';
+container.appendChild(flake);
+}
 }
 </script>
 
