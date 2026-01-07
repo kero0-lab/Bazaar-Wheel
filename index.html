@@ -10,134 +10,121 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
 
 <style>
-body {
-font-family: 'Cairo', sans-serif;
-background: radial-gradient(circle, #8b0000 0%, #2b0000 100%);
-color: #fff;
-margin: 0;
-min-height: 100vh;
-display: flex;
-flex-direction: column;
-align-items: center;
-overflow-x: hidden;
+body{
+font-family:'Cairo',sans-serif;
+background:radial-gradient(circle,#8b0000 0%,#2b0000 100%);
+color:#fff;
+margin:0;
+min-height:100vh;
+display:flex;
+justify-content:center;
+overflow-x:hidden;
 }
 
 /* ❄️ التلج */
-.snowflake {
-position: fixed;
-top: -10px;
-color: #fff;
-animation: fall linear infinite;
-z-index: 1;
-pointer-events: none;
+.snowflake{
+position:fixed;
+top:-10px;
+color:#fff;
+animation:fall linear infinite;
+z-index:1;
+pointer-events:none;
+}
+@keyframes fall{
+to{transform:translateY(110vh);}
 }
 
-@keyframes fall {
-to { transform: translateY(110vh); }
+.container{
+position:relative;
+z-index:10;
+text-align:center;
+padding:10px;
+max-width:500px;
 }
 
-.container {
-position: relative;
-z-index: 10;
-text-align: center;
-padding: 10px;
-max-width: 500px;
+h1{
+font-family:'Mountains of Christmas',cursive;
+color:#FFD700;
+font-size:2.8rem;
+text-shadow:2px 2px 0 #000;
 }
 
-h1 {
-font-family: 'Mountains of Christmas', cursive;
-color: #FFD700;
-font-size: 2.8rem;
-text-shadow: 2px 2px 0 #000;
+.wheel-wrapper{
+position:relative;
+margin:20px 0;
 }
 
-.wheel-wrapper {
-position: relative;
-margin: 20px 0;
+.pointer{
+position:absolute;
+top:-15px;
+left:50%;
+transform:translateX(-50%);
+width:45px;
+height:45px;
+background:url('https://img.icons8.com/emoji/48/star-emoji.png') no-repeat center/contain;
+z-index:10;
 }
 
-.pointer {
-position: absolute;
-top: -15px;
-left: 50%;
-transform: translateX(-50%);
-width: 45px;
-height: 45px;
-background: url('https://img.icons8.com/emoji/48/star-emoji.png') no-repeat center/contain;
-z-index: 10;
+.form-box{
+background:rgba(255,255,255,.95);
+padding:20px;
+border-radius:15px;
+color:#000;
 }
 
-.form-box {
-background: rgba(255,255,255,0.95);
-padding: 20px;
-border-radius: 15px;
-color: #000;
+input{
+width:80%;
+padding:10px;
+border-radius:8px;
+border:2px solid #146B3A;
+text-align:center;
+font-size:16px;
 }
 
-input {
-width: 80%;
-padding: 10px;
-border-radius: 8px;
-border: 2px solid #146B3A;
-text-align: center;
-font-size: 16px;
+button{
+margin-top:10px;
+width:90%;
+padding:12px;
+font-size:18px;
+border-radius:8px;
+border:none;
+background:#146B3A;
+color:#fff;
+cursor:pointer;
+font-weight:bold;
 }
 
-button {
-margin-top: 10px;
-width: 90%;
-padding: 12px;
-font-size: 18px;
-border-radius: 8px;
-border: none;
-background: #146B3A;
-color: #fff;
-cursor: pointer;
-font-weight: bold;
+/* 🎁 popup */
+#prizePopup{
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#FFD700;
+color:#8B0000;
+padding:30px;
+border-radius:20px;
+z-index:1000;
+text-align:center;
 }
 
-button:disabled {
-background: #999;
-cursor: not-allowed;
-}
-
-#prizePopup {
-display: none;
-position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-background: #FFD700;
-color: #8B0000;
-padding: 30px;
-border-radius: 20px;
-z-index: 1000;
-text-align: center;
-}
-
-#prizeText {
-font-size: 28px;
-font-weight: bold;
-}
-
-#retryBtn {
-margin-top: 20px;
-padding: 10px 20px;
-font-size: 18px;
-border: none;
-border-radius: 10px;
-background: #8B0000;
-color: #FFD700;
-cursor: pointer;
-font-family: 'Cairo', sans-serif;
-font-weight: bold;
+#retryBtn{
+margin-top:15px;
+padding:10px 25px;
+font-size:18px;
+border:none;
+border-radius:10px;
+background:#8B0000;
+color:#FFD700;
+cursor:pointer;
+font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ❄️ حاوية التلج -->
 <div id="snow-container"></div>
 
 <div class="container">
@@ -149,109 +136,105 @@ font-weight: bold;
 </div>
 
 <div class="form-box">
-<h3>سجل إيميلك وجرب حظك!</h3>
-<input type="email" id="email" placeholder="اكتب ايميلك هنا...">
+<input type="email" id="email" placeholder="اكتب ايميلك هنا">
 <br>
-<button id="spinBtn" onclick="calculatePrize()">لف العجلة 🎅</button>
-<p id="statusMsg" style="color:red;font-size:13px;font-weight:bold;"></p>
+<button onclick="spin()">لف العجلة 🎅</button>
+<p id="statusMsg" style="color:red;font-size:13px;"></p>
 </div>
 </div>
 
 <div id="prizePopup">
-  <div id="prizeText"></div>
-  <button id="retryBtn" onclick="retrySpin()">🔄 إعادة المحاولة</button>
+<div id="prizeText"></div>
+<button id="retryBtn" onclick="retrySpin()">🔄 إعادة محاولة</button>
 </div>
 
 <script>
-const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5eDQF4yhGhU-7iw-kdP5hCAjltudwP9FNt0v0VAcUuTFxbeeUk0wBfzpjpvdBfXgE7A/exec";
+const APP_SCRIPT_URL="https://script.google.com/macros/s/AKfycbz5eDQF4yhGhU-7iw-kdP5hCAjltudwP9FNt0v0VAcUuTFxbeeUk0wBfzpjpvdBfXgE7A/exec";
 let theWheel;
+let lastEmail="";
 
-/* 🎡 تحميل العجلة */
-window.onload = function() {
+/* تحميل العجلة */
+window.onload=()=>{
 fetch(APP_SCRIPT_URL)
-.then(res => res.json())
-.then(segments => {
-theWheel = new Winwheel({
-numSegments: segments.length,
-outerRadius: 200,
-innerRadius: 30,
-textFontSize: 11,
-textFontFamily: 'Cairo',
-segments: segments,
-animation: {
-type: 'spinToStop',
-duration: 5,
-spins: 8,
-callbackFinished: alertPrize
+.then(r=>r.json())
+.then(segments=>{
+theWheel=new Winwheel({
+numSegments:segments.length,
+outerRadius:200,
+innerRadius:30,
+textFontSize:11,
+textFontFamily:'Cairo',
+segments:segments,
+animation:{
+type:'spinToStop',
+duration:5,
+spins:8,
+callbackFinished:showPrize
 }
 });
 });
 createSnow();
 };
 
-/* 🎯 لف العجلة */
-function calculatePrize() {
-let email = document.getElementById('email').value.trim();
-let btn = document.getElementById('spinBtn');
-let status = document.getElementById('statusMsg');
+/* لف العجلة */
+function spin(){
+let email=document.getElementById('email').value.trim();
+let status=document.getElementById('statusMsg');
 
-if(email === "" || !email.includes("@")){
-status.innerText = "من فضلك اكتب إيميل صحيح";
+if(email===""||!email.includes("@")){
+status.innerText="اكتب إيميل صحيح";
 return;
 }
+lastEmail=email;
+status.innerText="";
 
-btn.disabled = true;
-btn.innerText = "جاري السحب... ⏳";
-status.innerText = "";
+let fd=new FormData();
+fd.append("email",email);
 
-let formData = new FormData();
-formData.append('email', email);
+fetch(APP_SCRIPT_URL,{method:"POST",body:fd})
+.then(r=>r.json())
+.then(data=>{
+if(data.result==="success"){
+let index=data.prizeIndex;
 
-fetch(APP_SCRIPT_URL, { method:'POST', body: formData })
-.then(res => res.json())
-.then(data => {
-if(data.result === "success"){
-let prizeIndex = data.prizeIndex;
-let stopAt = theWheel.getRandomForSegment(prizeIndex + 1);
+theWheel.stopAnimation(false);
+theWheel.rotationAngle=0;
+theWheel.draw();
 
-theWheel.userData = theWheel.segments[prizeIndex].text;
-theWheel.animation.stopAngle = stopAt;
+theWheel.userData=theWheel.segments[index].text;
+theWheel.animation.stopAngle=theWheel.getRandomForSegment(index+1);
 theWheel.startAnimation();
-} else {
-status.innerText = data.message;
-btn.disabled = false;
-btn.innerText = "لف العجلة 🎅";
+}else{
+status.innerText=data.message;
 }
 });
 }
 
-/* 🎁 عرض الجائزة */
-function alertPrize(){
-document.getElementById('prizeText').innerText =
-"🎉 ربحت: " + theWheel.userData;
-document.getElementById('prizePopup').style.display = 'block';
+/* عرض الجائزة */
+function showPrize(){
+document.getElementById("prizeText").innerText="🎉 ربحت: "+theWheel.userData;
+document.getElementById("prizePopup").style.display="block";
 }
 
-/* 🔄 إعادة المحاولة */
+/* 🔄 إعادة محاولة فورية */
 function retrySpin(){
-document.getElementById('prizePopup').style.display = 'none';
-let btn = document.getElementById('spinBtn');
-btn.disabled = false;
-btn.innerText = "لف العجلة 🎅";
+document.getElementById("prizePopup").style.display="none";
+document.getElementById("email").value=lastEmail;
+spin(); // لف فورًا بدون انتظار
 }
 
-/* ❄️ إنشاء التلج */
-function createSnow() {
-const container = document.getElementById('snow-container');
+/* ❄️ التلج */
+function createSnow(){
+const c=document.getElementById("snow-container");
 for(let i=0;i<40;i++){
-let flake = document.createElement('div');
-flake.className='snowflake';
-flake.innerText=['❄','❅','❆','•'][Math.floor(Math.random()*4)];
-flake.style.left=Math.random()*100+'vw';
-flake.style.animationDuration=(Math.random()*3+2)+'s';
-flake.style.opacity=Math.random();
-flake.style.fontSize=(Math.random()*20+10)+'px';
-container.appendChild(flake);
+let f=document.createElement("div");
+f.className="snowflake";
+f.innerText=["❄","❅","❆","•"][Math.floor(Math.random()*4)];
+f.style.left=Math.random()*100+"vw";
+f.style.fontSize=(Math.random()*20+10)+"px";
+f.style.opacity=Math.random();
+f.style.animationDuration=(Math.random()*3+2)+"s";
+c.appendChild(f);
 }
 }
 </script>
